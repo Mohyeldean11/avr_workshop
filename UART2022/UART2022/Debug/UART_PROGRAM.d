@@ -1,0 +1,15 @@
+UART_PROGRAM.d UART_PROGRAM.o: .././UART_PROGRAM.c .././LBIT_MATH.h \
+ .././DATA_TYPES.h .././MDIO_INTERFACE.h .././MDIO_PRIVATE.h \
+ .././UART_PRIVATE.h .././UART_INTERFACE.h
+
+.././LBIT_MATH.h:
+
+.././DATA_TYPES.h:
+
+.././MDIO_INTERFACE.h:
+
+.././MDIO_PRIVATE.h:
+
+.././UART_PRIVATE.h:
+
+.././UART_INTERFACE.h:
