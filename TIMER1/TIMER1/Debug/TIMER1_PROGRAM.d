@@ -1,0 +1,13 @@
+TIMER1_PROGRAM.d TIMER1_PROGRAM.o: .././TIMER1_PROGRAM.c \
+ .././DATA_TYPES.h .././LBIT_Math.h .././MDIO_INTERFACE.h \
+ .././TIMER1_PRIVATE.h .././TIMER1_INTERFACE.h
+
+.././DATA_TYPES.h:
+
+.././LBIT_Math.h:
+
+.././MDIO_INTERFACE.h:
+
+.././TIMER1_PRIVATE.h:
+
+.././TIMER1_INTERFACE.h:
