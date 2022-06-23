@@ -1,0 +1,932 @@
+
+lcd project.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000472  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000008  00800060  00000472  000004e6  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  000004ee  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000520  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 000000a8  00000000  00000000  0000055c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   0000115e  00000000  00000000  00000604  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 0000073e  00000000  00000000  00001762  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000712  00000000  00000000  00001ea0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000118  00000000  00000000  000025b4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    0000047e  00000000  00000000  000026cc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000ad3  00000000  00000000  00002b4a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000078  00000000  00000000  0000361d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+   8:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+   c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  10:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  14:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  18:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  1c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  20:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  24:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  28:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  2c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  30:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  34:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  38:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  3c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  40:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  44:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  48:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  4c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  50:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_copy_data>:
+  60:	10 e0       	ldi	r17, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	e2 e7       	ldi	r30, 0x72	; 114
+  68:	f4 e0       	ldi	r31, 0x04	; 4
+  6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
+  6c:	05 90       	lpm	r0, Z+
+  6e:	0d 92       	st	X+, r0
+  70:	a8 36       	cpi	r26, 0x68	; 104
+  72:	b1 07       	cpc	r27, r17
+  74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
+  76:	0e 94 88 01 	call	0x310	; 0x310 <main>
+  7a:	0c 94 37 02 	jmp	0x46e	; 0x46e <_exit>
+
+0000007e <__bad_interrupt>:
+  7e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000082 <hlcd_sendCMD>:
+/************************************************************************/
+/*                          Functions' definitions                      */
+/************************************************************************/
+
+static void hlcd_sendCMD(u8_t au8_cmd)
+{
+  82:	cf 93       	push	r28
+  84:	c8 2f       	mov	r28, r24
+	/*Writing over LCD*/
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_RW, LOW);
+  86:	40 e0       	ldi	r20, 0x00	; 0
+  88:	64 e0       	ldi	r22, 0x04	; 4
+  8a:	81 e0       	ldi	r24, 0x01	; 1
+  8c:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Sending command over LCD*/	
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_RS, LOW);
+  90:	40 e0       	ldi	r20, 0x00	; 0
+  92:	62 e0       	ldi	r22, 0x02	; 2
+  94:	81 e0       	ldi	r24, 0x01	; 1
+  96:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Transferring the high nibble bits*/
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB7, GET_BIT(au8_cmd, 7));
+  9a:	4c 2f       	mov	r20, r28
+  9c:	44 1f       	adc	r20, r20
+  9e:	44 27       	eor	r20, r20
+  a0:	44 1f       	adc	r20, r20
+  a2:	60 e8       	ldi	r22, 0x80	; 128
+  a4:	80 e0       	ldi	r24, 0x00	; 0
+  a6:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB6, GET_BIT(au8_cmd, 6));
+  aa:	c6 fb       	bst	r28, 6
+  ac:	44 27       	eor	r20, r20
+  ae:	40 f9       	bld	r20, 0
+  b0:	60 e4       	ldi	r22, 0x40	; 64
+  b2:	80 e0       	ldi	r24, 0x00	; 0
+  b4:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB5, GET_BIT(au8_cmd, 5));
+  b8:	c5 fb       	bst	r28, 5
+  ba:	44 27       	eor	r20, r20
+  bc:	40 f9       	bld	r20, 0
+  be:	60 e2       	ldi	r22, 0x20	; 32
+  c0:	80 e0       	ldi	r24, 0x00	; 0
+  c2:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB4, GET_BIT(au8_cmd, 4));
+  c6:	c4 fb       	bst	r28, 4
+  c8:	44 27       	eor	r20, r20
+  ca:	40 f9       	bld	r20, 0
+  cc:	60 e1       	ldi	r22, 0x10	; 16
+  ce:	80 e0       	ldi	r24, 0x00	; 0
+  d0:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Trigger writing over the LCD*/
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+  d4:	40 e0       	ldi	r20, 0x00	; 0
+  d6:	68 e0       	ldi	r22, 0x08	; 8
+  d8:	81 e0       	ldi	r24, 0x01	; 1
+  da:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  de:	87 ec       	ldi	r24, 0xC7	; 199
+  e0:	90 e0       	ldi	r25, 0x00	; 0
+  e2:	01 97       	sbiw	r24, 0x01	; 1
+  e4:	f1 f7       	brne	.-4      	; 0xe2 <hlcd_sendCMD+0x60>
+  e6:	00 c0       	rjmp	.+0      	; 0xe8 <hlcd_sendCMD+0x66>
+  e8:	00 00       	nop
+	_delay_us(50);
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
+  ea:	41 e0       	ldi	r20, 0x01	; 1
+  ec:	68 e0       	ldi	r22, 0x08	; 8
+  ee:	81 e0       	ldi	r24, 0x01	; 1
+  f0:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+
+	/*Transferring the low nibble bits*/	
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB7, GET_BIT(au8_cmd, 3));
+  f4:	c3 fb       	bst	r28, 3
+  f6:	44 27       	eor	r20, r20
+  f8:	40 f9       	bld	r20, 0
+  fa:	60 e8       	ldi	r22, 0x80	; 128
+  fc:	80 e0       	ldi	r24, 0x00	; 0
+  fe:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB6, GET_BIT(au8_cmd, 2));
+ 102:	c2 fb       	bst	r28, 2
+ 104:	44 27       	eor	r20, r20
+ 106:	40 f9       	bld	r20, 0
+ 108:	60 e4       	ldi	r22, 0x40	; 64
+ 10a:	80 e0       	ldi	r24, 0x00	; 0
+ 10c:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB5, GET_BIT(au8_cmd, 1));
+ 110:	c1 fb       	bst	r28, 1
+ 112:	44 27       	eor	r20, r20
+ 114:	40 f9       	bld	r20, 0
+ 116:	60 e2       	ldi	r22, 0x20	; 32
+ 118:	80 e0       	ldi	r24, 0x00	; 0
+ 11a:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB4, GET_BIT(au8_cmd, 0));
+ 11e:	4c 2f       	mov	r20, r28
+ 120:	41 70       	andi	r20, 0x01	; 1
+ 122:	60 e1       	ldi	r22, 0x10	; 16
+ 124:	80 e0       	ldi	r24, 0x00	; 0
+ 126:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+
+	/*Trigger writing over the LCD*/	
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+ 12a:	40 e0       	ldi	r20, 0x00	; 0
+ 12c:	68 e0       	ldi	r22, 0x08	; 8
+ 12e:	81 e0       	ldi	r24, 0x01	; 1
+ 130:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+ 134:	87 ec       	ldi	r24, 0xC7	; 199
+ 136:	90 e0       	ldi	r25, 0x00	; 0
+ 138:	01 97       	sbiw	r24, 0x01	; 1
+ 13a:	f1 f7       	brne	.-4      	; 0x138 <hlcd_sendCMD+0xb6>
+ 13c:	00 c0       	rjmp	.+0      	; 0x13e <hlcd_sendCMD+0xbc>
+ 13e:	00 00       	nop
+	_delay_us(50);
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, HIGH);	
+ 140:	41 e0       	ldi	r20, 0x01	; 1
+ 142:	68 e0       	ldi	r22, 0x08	; 8
+ 144:	81 e0       	ldi	r24, 0x01	; 1
+ 146:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Return from this function*/
+	return;
+}
+ 14a:	cf 91       	pop	r28
+ 14c:	08 95       	ret
+
+0000014e <hlcd_sendData>:
+
+static void hlcd_sendData(u8_t au8_data)
+{
+ 14e:	cf 93       	push	r28
+ 150:	c8 2f       	mov	r28, r24
+	/*Writing over LCD*/
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_RW, LOW);
+ 152:	40 e0       	ldi	r20, 0x00	; 0
+ 154:	64 e0       	ldi	r22, 0x04	; 4
+ 156:	81 e0       	ldi	r24, 0x01	; 1
+ 158:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Sending display data over LCD*/
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_RS, HIGH);
+ 15c:	41 e0       	ldi	r20, 0x01	; 1
+ 15e:	62 e0       	ldi	r22, 0x02	; 2
+ 160:	81 e0       	ldi	r24, 0x01	; 1
+ 162:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Transferring the high nibble bits*/
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB7, GET_BIT(au8_data, 7));
+ 166:	4c 2f       	mov	r20, r28
+ 168:	44 1f       	adc	r20, r20
+ 16a:	44 27       	eor	r20, r20
+ 16c:	44 1f       	adc	r20, r20
+ 16e:	60 e8       	ldi	r22, 0x80	; 128
+ 170:	80 e0       	ldi	r24, 0x00	; 0
+ 172:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB6, GET_BIT(au8_data, 6));
+ 176:	c6 fb       	bst	r28, 6
+ 178:	44 27       	eor	r20, r20
+ 17a:	40 f9       	bld	r20, 0
+ 17c:	60 e4       	ldi	r22, 0x40	; 64
+ 17e:	80 e0       	ldi	r24, 0x00	; 0
+ 180:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB5, GET_BIT(au8_data, 5));
+ 184:	c5 fb       	bst	r28, 5
+ 186:	44 27       	eor	r20, r20
+ 188:	40 f9       	bld	r20, 0
+ 18a:	60 e2       	ldi	r22, 0x20	; 32
+ 18c:	80 e0       	ldi	r24, 0x00	; 0
+ 18e:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB4, GET_BIT(au8_data, 4));
+ 192:	c4 fb       	bst	r28, 4
+ 194:	44 27       	eor	r20, r20
+ 196:	40 f9       	bld	r20, 0
+ 198:	60 e1       	ldi	r22, 0x10	; 16
+ 19a:	80 e0       	ldi	r24, 0x00	; 0
+ 19c:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Trigger writing over the LCD*/
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+ 1a0:	40 e0       	ldi	r20, 0x00	; 0
+ 1a2:	68 e0       	ldi	r22, 0x08	; 8
+ 1a4:	81 e0       	ldi	r24, 0x01	; 1
+ 1a6:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+ 1aa:	87 ec       	ldi	r24, 0xC7	; 199
+ 1ac:	90 e0       	ldi	r25, 0x00	; 0
+ 1ae:	01 97       	sbiw	r24, 0x01	; 1
+ 1b0:	f1 f7       	brne	.-4      	; 0x1ae <hlcd_sendData+0x60>
+ 1b2:	00 c0       	rjmp	.+0      	; 0x1b4 <hlcd_sendData+0x66>
+ 1b4:	00 00       	nop
+	_delay_us(50);
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
+ 1b6:	41 e0       	ldi	r20, 0x01	; 1
+ 1b8:	68 e0       	ldi	r22, 0x08	; 8
+ 1ba:	81 e0       	ldi	r24, 0x01	; 1
+ 1bc:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+
+	/*Transferring the low nibble bits*/
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB7, GET_BIT(au8_data, 3));
+ 1c0:	c3 fb       	bst	r28, 3
+ 1c2:	44 27       	eor	r20, r20
+ 1c4:	40 f9       	bld	r20, 0
+ 1c6:	60 e8       	ldi	r22, 0x80	; 128
+ 1c8:	80 e0       	ldi	r24, 0x00	; 0
+ 1ca:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB6, GET_BIT(au8_data, 2));
+ 1ce:	c2 fb       	bst	r28, 2
+ 1d0:	44 27       	eor	r20, r20
+ 1d2:	40 f9       	bld	r20, 0
+ 1d4:	60 e4       	ldi	r22, 0x40	; 64
+ 1d6:	80 e0       	ldi	r24, 0x00	; 0
+ 1d8:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB5, GET_BIT(au8_data, 1));
+ 1dc:	c1 fb       	bst	r28, 1
+ 1de:	44 27       	eor	r20, r20
+ 1e0:	40 f9       	bld	r20, 0
+ 1e2:	60 e2       	ldi	r22, 0x20	; 32
+ 1e4:	80 e0       	ldi	r24, 0x00	; 0
+ 1e6:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB4, GET_BIT(au8_data, 0));
+ 1ea:	4c 2f       	mov	r20, r28
+ 1ec:	41 70       	andi	r20, 0x01	; 1
+ 1ee:	60 e1       	ldi	r22, 0x10	; 16
+ 1f0:	80 e0       	ldi	r24, 0x00	; 0
+ 1f2:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+
+	/*Trigger writing over the LCD*/
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+ 1f6:	40 e0       	ldi	r20, 0x00	; 0
+ 1f8:	68 e0       	ldi	r22, 0x08	; 8
+ 1fa:	81 e0       	ldi	r24, 0x01	; 1
+ 1fc:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+ 200:	87 ec       	ldi	r24, 0xC7	; 199
+ 202:	90 e0       	ldi	r25, 0x00	; 0
+ 204:	01 97       	sbiw	r24, 0x01	; 1
+ 206:	f1 f7       	brne	.-4      	; 0x204 <hlcd_sendData+0xb6>
+ 208:	00 c0       	rjmp	.+0      	; 0x20a <hlcd_sendData+0xbc>
+ 20a:	00 00       	nop
+	_delay_us(50);
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
+ 20c:	41 e0       	ldi	r20, 0x01	; 1
+ 20e:	68 e0       	ldi	r22, 0x08	; 8
+ 210:	81 e0       	ldi	r24, 0x01	; 1
+ 212:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+
+	/*Return from this function*/
+	return;
+}
+ 216:	cf 91       	pop	r28
+ 218:	08 95       	ret
+
+0000021a <hlcd_init>:
+
+void hlcd_init(void)
+{
+	/*LCD data pins initialization as output*/
+	MDIO_SETPIN_STATUS(HLCD_DATA_PORT, (HLCD_DB4 | HLCD_DB5 | HLCD_DB6 | HLCD_DB7), OUTPUT);	
+ 21a:	40 e0       	ldi	r20, 0x00	; 0
+ 21c:	60 ef       	ldi	r22, 0xF0	; 240
+ 21e:	80 e0       	ldi	r24, 0x00	; 0
+ 220:	0e 94 92 01 	call	0x324	; 0x324 <MDIO_SETPIN_STATUS>
+	
+	/*LCD control pins initialization as output*/
+	MDIO_SETPIN_STATUS(HLCD_CONTROL_PORT, (HLCD_RS | HLCD_RW | HLCD_EN), OUTPUT);
+ 224:	40 e0       	ldi	r20, 0x00	; 0
+ 226:	6e e0       	ldi	r22, 0x0E	; 14
+ 228:	81 e0       	ldi	r24, 0x01	; 1
+ 22a:	0e 94 92 01 	call	0x324	; 0x324 <MDIO_SETPIN_STATUS>
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
+ 22e:	41 e0       	ldi	r20, 0x01	; 1
+ 230:	68 e0       	ldi	r22, 0x08	; 8
+ 232:	81 e0       	ldi	r24, 0x01	; 1
+ 234:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 238:	2f ef       	ldi	r18, 0xFF	; 255
+ 23a:	80 e7       	ldi	r24, 0x70	; 112
+ 23c:	92 e0       	ldi	r25, 0x02	; 2
+ 23e:	21 50       	subi	r18, 0x01	; 1
+ 240:	80 40       	sbci	r24, 0x00	; 0
+ 242:	90 40       	sbci	r25, 0x00	; 0
+ 244:	e1 f7       	brne	.-8      	; 0x23e <hlcd_init+0x24>
+ 246:	00 c0       	rjmp	.+0      	; 0x248 <hlcd_init+0x2e>
+ 248:	00 00       	nop
+	
+	/*Wait until Vdd rises to 4.5v*/
+	_delay_ms(50);
+	
+	/*Writing over LCD*/
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_RW, LOW);
+ 24a:	40 e0       	ldi	r20, 0x00	; 0
+ 24c:	64 e0       	ldi	r22, 0x04	; 4
+ 24e:	81 e0       	ldi	r24, 0x01	; 1
+ 250:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Sending command over LCD*/
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_RS, LOW);
+ 254:	40 e0       	ldi	r20, 0x00	; 0
+ 256:	62 e0       	ldi	r22, 0x02	; 2
+ 258:	81 e0       	ldi	r24, 0x01	; 1
+ 25a:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Transferring the function set instruction header (4-bits)*/
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB7, LOW);
+ 25e:	40 e0       	ldi	r20, 0x00	; 0
+ 260:	60 e8       	ldi	r22, 0x80	; 128
+ 262:	80 e0       	ldi	r24, 0x00	; 0
+ 264:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB6, LOW);
+ 268:	40 e0       	ldi	r20, 0x00	; 0
+ 26a:	60 e4       	ldi	r22, 0x40	; 64
+ 26c:	80 e0       	ldi	r24, 0x00	; 0
+ 26e:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB5, HIGH);
+ 272:	41 e0       	ldi	r20, 0x01	; 1
+ 274:	60 e2       	ldi	r22, 0x20	; 32
+ 276:	80 e0       	ldi	r24, 0x00	; 0
+ 278:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	MDIO_SETPIN_VALUE(HLCD_DATA_PORT, HLCD_DB4, LOW);
+ 27c:	40 e0       	ldi	r20, 0x00	; 0
+ 27e:	60 e1       	ldi	r22, 0x10	; 16
+ 280:	80 e0       	ldi	r24, 0x00	; 0
+ 282:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Trigger writing over the LCD*/
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+ 286:	40 e0       	ldi	r20, 0x00	; 0
+ 288:	68 e0       	ldi	r22, 0x08	; 8
+ 28a:	81 e0       	ldi	r24, 0x01	; 1
+ 28c:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 290:	87 ec       	ldi	r24, 0xC7	; 199
+ 292:	90 e0       	ldi	r25, 0x00	; 0
+ 294:	01 97       	sbiw	r24, 0x01	; 1
+ 296:	f1 f7       	brne	.-4      	; 0x294 <hlcd_init+0x7a>
+ 298:	00 c0       	rjmp	.+0      	; 0x29a <hlcd_init+0x80>
+ 29a:	00 00       	nop
+	_delay_us(50);
+	MDIO_SETPIN_VALUE(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
+ 29c:	41 e0       	ldi	r20, 0x01	; 1
+ 29e:	68 e0       	ldi	r22, 0x08	; 8
+ 2a0:	81 e0       	ldi	r24, 0x01	; 1
+ 2a2:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <MDIO_SETPIN_VALUE>
+	
+	/*Sending the function set instruction*/
+	hlcd_sendCMD(0x2C);
+ 2a6:	8c e2       	ldi	r24, 0x2C	; 44
+ 2a8:	0e 94 41 00 	call	0x82	; 0x82 <hlcd_sendCMD>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 2ac:	8f e9       	ldi	r24, 0x9F	; 159
+ 2ae:	9f e0       	ldi	r25, 0x0F	; 15
+ 2b0:	01 97       	sbiw	r24, 0x01	; 1
+ 2b2:	f1 f7       	brne	.-4      	; 0x2b0 <hlcd_init+0x96>
+ 2b4:	00 c0       	rjmp	.+0      	; 0x2b6 <hlcd_init+0x9c>
+ 2b6:	00 00       	nop
+	
+	/*Delay for 1 millisecond*/
+	_delay_ms(1);
+
+	/*Sending the display ON/OFF control instruction*/
+	hlcd_sendCMD(0x0F);
+ 2b8:	8f e0       	ldi	r24, 0x0F	; 15
+ 2ba:	0e 94 41 00 	call	0x82	; 0x82 <hlcd_sendCMD>
+ 2be:	8f e9       	ldi	r24, 0x9F	; 159
+ 2c0:	9f e0       	ldi	r25, 0x0F	; 15
+ 2c2:	01 97       	sbiw	r24, 0x01	; 1
+ 2c4:	f1 f7       	brne	.-4      	; 0x2c2 <hlcd_init+0xa8>
+ 2c6:	00 c0       	rjmp	.+0      	; 0x2c8 <hlcd_init+0xae>
+ 2c8:	00 00       	nop
+	
+	/*Delay for 1 millisecond*/
+	_delay_ms(1);
+	
+	/*Sending the clearing display instruction*/
+	hlcd_sendCMD(0x01);
+ 2ca:	81 e0       	ldi	r24, 0x01	; 1
+ 2cc:	0e 94 41 00 	call	0x82	; 0x82 <hlcd_sendCMD>
+ 2d0:	8f e3       	ldi	r24, 0x3F	; 63
+ 2d2:	9f e1       	ldi	r25, 0x1F	; 31
+ 2d4:	01 97       	sbiw	r24, 0x01	; 1
+ 2d6:	f1 f7       	brne	.-4      	; 0x2d4 <hlcd_init+0xba>
+ 2d8:	00 c0       	rjmp	.+0      	; 0x2da <hlcd_init+0xc0>
+ 2da:	00 00       	nop
+	
+	/*Delay for 2 millisecond*/
+	_delay_ms(2);
+	
+	/*Sending the entry mode set instruction*/
+	hlcd_sendCMD(0x06);
+ 2dc:	86 e0       	ldi	r24, 0x06	; 6
+ 2de:	0e 94 41 00 	call	0x82	; 0x82 <hlcd_sendCMD>
+ 2e2:	8f e9       	ldi	r24, 0x9F	; 159
+ 2e4:	9f e0       	ldi	r25, 0x0F	; 15
+ 2e6:	01 97       	sbiw	r24, 0x01	; 1
+ 2e8:	f1 f7       	brne	.-4      	; 0x2e6 <hlcd_init+0xcc>
+ 2ea:	00 c0       	rjmp	.+0      	; 0x2ec <hlcd_init+0xd2>
+ 2ec:	00 00       	nop
+ 2ee:	08 95       	ret
+
+000002f0 <hlcd_writeChar>:
+}
+
+void hlcd_writeChar(u8_t au8_charData)
+{
+	/*Sending the character data over LCD*/
+	hlcd_sendData(au8_charData);
+ 2f0:	0e 94 a7 00 	call	0x14e	; 0x14e <hlcd_sendData>
+ 2f4:	08 95       	ret
+
+000002f6 <hlcd_writeString>:
+	/*Return from this function*/
+	return;
+}
+
+void hlcd_writeString(u8_t* pu8_stringData)
+{
+ 2f6:	cf 93       	push	r28
+ 2f8:	df 93       	push	r29
+ 2fa:	ec 01       	movw	r28, r24
+	/*Looping over string characters*/
+	while(*pu8_stringData != '\0')
+ 2fc:	03 c0       	rjmp	.+6      	; 0x304 <hlcd_writeString+0xe>
+	{
+		/*Sending the character data*/
+		hlcd_sendData(*pu8_stringData);
+ 2fe:	0e 94 a7 00 	call	0x14e	; 0x14e <hlcd_sendData>
+		
+		/*Increment the pointer current address*/
+		pu8_stringData++;
+ 302:	21 96       	adiw	r28, 0x01	; 1
+}
+
+void hlcd_writeString(u8_t* pu8_stringData)
+{
+	/*Looping over string characters*/
+	while(*pu8_stringData != '\0')
+ 304:	88 81       	ld	r24, Y
+ 306:	81 11       	cpse	r24, r1
+ 308:	fa cf       	rjmp	.-12     	; 0x2fe <hlcd_writeString+0x8>
+		pu8_stringData++;
+	}
+	
+	/*Return from this function*/
+	return;
+}
+ 30a:	df 91       	pop	r29
+ 30c:	cf 91       	pop	r28
+ 30e:	08 95       	ret
+
+00000310 <main>:
+#define F_CPU 16000000UL
+#include "util/delay.h"
+
+int main(void)
+{
+	hlcd_init();
+ 310:	0e 94 0d 01 	call	0x21a	; 0x21a <hlcd_init>
+	
+	hlcd_writeString((u8_t *)("tmam=98"));
+ 314:	80 e6       	ldi	r24, 0x60	; 96
+ 316:	90 e0       	ldi	r25, 0x00	; 0
+ 318:	0e 94 7b 01 	call	0x2f6	; 0x2f6 <hlcd_writeString>
+    /* Replace with your application code */
+	hlcd_writeChar(' ');
+ 31c:	80 e2       	ldi	r24, 0x20	; 32
+ 31e:	0e 94 78 01 	call	0x2f0	; 0x2f0 <hlcd_writeChar>
+ 322:	ff cf       	rjmp	.-2      	; 0x322 <main+0x12>
+
+00000324 <MDIO_SETPIN_STATUS>:
+/*FUNCTIONS DEFINITIONS*/
+
+void MDIO_SETPIN_STATUS(u8_t au8_port, u8_t au8_pin, u8_t au8_status)
+{
+
+    switch (au8_port)
+ 324:	81 30       	cpi	r24, 0x01	; 1
+ 326:	f9 f0       	breq	.+62     	; 0x366 <MDIO_SETPIN_STATUS+0x42>
+ 328:	30 f0       	brcs	.+12     	; 0x336 <MDIO_SETPIN_STATUS+0x12>
+ 32a:	82 30       	cpi	r24, 0x02	; 2
+ 32c:	a1 f1       	breq	.+104    	; 0x396 <MDIO_SETPIN_STATUS+0x72>
+ 32e:	83 30       	cpi	r24, 0x03	; 3
+ 330:	09 f4       	brne	.+2      	; 0x334 <MDIO_SETPIN_STATUS+0x10>
+ 332:	49 c0       	rjmp	.+146    	; 0x3c6 <MDIO_SETPIN_STATUS+0xa2>
+ 334:	08 95       	ret
+    {
+    /*incase of port A*/
+    case PORTA:
+    {
+        /*GETTING THE STATUS*/
+        switch (au8_status)
+ 336:	41 30       	cpi	r20, 0x01	; 1
+ 338:	41 f0       	breq	.+16     	; 0x34a <MDIO_SETPIN_STATUS+0x26>
+ 33a:	18 f0       	brcs	.+6      	; 0x342 <MDIO_SETPIN_STATUS+0x1e>
+ 33c:	42 30       	cpi	r20, 0x02	; 2
+ 33e:	51 f0       	breq	.+20     	; 0x354 <MDIO_SETPIN_STATUS+0x30>
+ 340:	08 95       	ret
+        {
+            /*INCASE OF OUTPUT*/
+        case OUTPUT:
+            MDIO_DDRA |= au8_pin; /*SETTING THE VALUE OF THE PINS IN DDRA BY 1*/
+ 342:	8a b3       	in	r24, 0x1a	; 26
+ 344:	68 2b       	or	r22, r24
+ 346:	6a bb       	out	0x1a, r22	; 26
+
+            break;
+ 348:	08 95       	ret
+
+            /*INCASE OF INPUT FLOAT*/
+        case INPUT_FLOAT:
+
+            MDIO_DDRA &= ~au8_pin; /*SETTING THE VALUE OF THE PINS IN DDRA BY 0*/
+ 34a:	8a b3       	in	r24, 0x1a	; 26
+ 34c:	60 95       	com	r22
+ 34e:	68 23       	and	r22, r24
+ 350:	6a bb       	out	0x1a, r22	; 26
+
+            break;
+ 352:	08 95       	ret
+
+            /*INCASE OF INPUT PULLUP*/
+        case INPUT_PULLUP:
+
+            MDIO_DDRA &= ~au8_pin; /*SETTING THE VALUE OF THE PINS IN PINS BY 0*/
+ 354:	8a b3       	in	r24, 0x1a	; 26
+ 356:	96 2f       	mov	r25, r22
+ 358:	90 95       	com	r25
+ 35a:	89 23       	and	r24, r25
+ 35c:	8a bb       	out	0x1a, r24	; 26
+
+            MDIO_PORTA |= au8_pin; /*Set the specified pins to 1 in PORT*/
+ 35e:	8b b3       	in	r24, 0x1b	; 27
+ 360:	68 2b       	or	r22, r24
+ 362:	6b bb       	out	0x1b, r22	; 27
+            break;
+ 364:	08 95       	ret
+    }
+
+    case PORTB:
+    {
+        /*GETTING THE STATUS*/
+        switch (au8_status)
+ 366:	41 30       	cpi	r20, 0x01	; 1
+ 368:	41 f0       	breq	.+16     	; 0x37a <MDIO_SETPIN_STATUS+0x56>
+ 36a:	18 f0       	brcs	.+6      	; 0x372 <MDIO_SETPIN_STATUS+0x4e>
+ 36c:	42 30       	cpi	r20, 0x02	; 2
+ 36e:	51 f0       	breq	.+20     	; 0x384 <MDIO_SETPIN_STATUS+0x60>
+ 370:	08 95       	ret
+        {
+            /*INCASE OF OUTPUT*/
+        case OUTPUT:
+            MDIO_DDRB |= au8_pin; /*SETTING THE VALUE OF THE PINS IN DDRA BY 1*/
+ 372:	87 b3       	in	r24, 0x17	; 23
+ 374:	68 2b       	or	r22, r24
+ 376:	67 bb       	out	0x17, r22	; 23
+
+            break;
+ 378:	08 95       	ret
+
+            /*INCASE OF INPUT FLOAT*/
+        case INPUT_FLOAT:
+
+            MDIO_DDRB &= ~au8_pin; /*SETTING THE VALUE OF THE PINS IN DDRA BY 0*/
+ 37a:	87 b3       	in	r24, 0x17	; 23
+ 37c:	60 95       	com	r22
+ 37e:	68 23       	and	r22, r24
+ 380:	67 bb       	out	0x17, r22	; 23
+
+            break;
+ 382:	08 95       	ret
+
+            /*INCASE OF INPUT PULLUP*/
+        case INPUT_PULLUP:
+
+            MDIO_DDRB &= ~au8_pin; /*SETTING THE VALUE OF THE PINS IN PINS BY 0*/
+ 384:	87 b3       	in	r24, 0x17	; 23
+ 386:	96 2f       	mov	r25, r22
+ 388:	90 95       	com	r25
+ 38a:	89 23       	and	r24, r25
+ 38c:	87 bb       	out	0x17, r24	; 23
+
+            MDIO_PORTB |= au8_pin; /*Set the specified pins to 1 in PORT*/
+ 38e:	88 b3       	in	r24, 0x18	; 24
+ 390:	68 2b       	or	r22, r24
+ 392:	68 bb       	out	0x18, r22	; 24
+            break;
+ 394:	08 95       	ret
+    }
+        /*incase of port C*/
+    case PORTC:
+    {
+        /*GETTING THE STATUS*/
+        switch (au8_status)
+ 396:	41 30       	cpi	r20, 0x01	; 1
+ 398:	41 f0       	breq	.+16     	; 0x3aa <MDIO_SETPIN_STATUS+0x86>
+ 39a:	18 f0       	brcs	.+6      	; 0x3a2 <MDIO_SETPIN_STATUS+0x7e>
+ 39c:	42 30       	cpi	r20, 0x02	; 2
+ 39e:	51 f0       	breq	.+20     	; 0x3b4 <MDIO_SETPIN_STATUS+0x90>
+ 3a0:	08 95       	ret
+        {
+            /*INCASE OF OUTPUT*/
+        case OUTPUT:
+            MDIO_DDRC |= au8_pin; /*SETTING THE VALUE OF THE PINS IN DDRA BY 1*/
+ 3a2:	84 b3       	in	r24, 0x14	; 20
+ 3a4:	68 2b       	or	r22, r24
+ 3a6:	64 bb       	out	0x14, r22	; 20
+
+            break;
+ 3a8:	08 95       	ret
+
+            /*INCASE OF INPUT FLOAT*/
+        case INPUT_FLOAT:
+
+            MDIO_DDRC &= ~au8_pin; /*SETTING THE VALUE OF THE PINS IN DDRA BY 0*/
+ 3aa:	84 b3       	in	r24, 0x14	; 20
+ 3ac:	60 95       	com	r22
+ 3ae:	68 23       	and	r22, r24
+ 3b0:	64 bb       	out	0x14, r22	; 20
+
+            break;
+ 3b2:	08 95       	ret
+
+            /*INCASE OF INPUT PULLUP*/
+        case INPUT_PULLUP:
+
+            MDIO_DDRC &= ~au8_pin; /*SETTING THE VALUE OF THE PINS IN PINS BY 0*/
+ 3b4:	84 b3       	in	r24, 0x14	; 20
+ 3b6:	96 2f       	mov	r25, r22
+ 3b8:	90 95       	com	r25
+ 3ba:	89 23       	and	r24, r25
+ 3bc:	84 bb       	out	0x14, r24	; 20
+
+            MDIO_PORTC |= au8_pin; /*Set the specified pins to 1 in PORT*/
+ 3be:	85 b3       	in	r24, 0x15	; 21
+ 3c0:	68 2b       	or	r22, r24
+ 3c2:	65 bb       	out	0x15, r22	; 21
+
+            break;
+ 3c4:	08 95       	ret
+    }
+        /*incase of port D*/
+    case PORTD:
+    {
+        /*GETTING THE STATUS*/
+        switch (au8_status)
+ 3c6:	41 30       	cpi	r20, 0x01	; 1
+ 3c8:	41 f0       	breq	.+16     	; 0x3da <MDIO_SETPIN_STATUS+0xb6>
+ 3ca:	18 f0       	brcs	.+6      	; 0x3d2 <MDIO_SETPIN_STATUS+0xae>
+ 3cc:	42 30       	cpi	r20, 0x02	; 2
+ 3ce:	51 f0       	breq	.+20     	; 0x3e4 <MDIO_SETPIN_STATUS+0xc0>
+ 3d0:	08 95       	ret
+        {
+            /*INCASE OF OUTPUT*/
+        case OUTPUT:
+            MDIO_DDRD |= au8_pin; /*SETTING THE VALUE OF THE PINS IN DDRA BY 1*/
+ 3d2:	81 b3       	in	r24, 0x11	; 17
+ 3d4:	68 2b       	or	r22, r24
+ 3d6:	61 bb       	out	0x11, r22	; 17
+
+            break;
+ 3d8:	08 95       	ret
+
+            /*INCASE OF INPUT FLOAT*/
+        case INPUT_FLOAT:
+
+            MDIO_DDRD &= ~au8_pin; /*SETTING THE VALUE OF THE PINS IN DDRA BY 0*/
+ 3da:	81 b3       	in	r24, 0x11	; 17
+ 3dc:	60 95       	com	r22
+ 3de:	68 23       	and	r22, r24
+ 3e0:	61 bb       	out	0x11, r22	; 17
+
+            break;
+ 3e2:	08 95       	ret
+
+            /*INCASE OF INPUT PULLUP*/
+        case INPUT_PULLUP:
+
+            MDIO_DDRD &= ~au8_pin; /*SETTING THE VALUE OF THE PINS IN PINS BY 0*/
+ 3e4:	81 b3       	in	r24, 0x11	; 17
+ 3e6:	96 2f       	mov	r25, r22
+ 3e8:	90 95       	com	r25
+ 3ea:	89 23       	and	r24, r25
+ 3ec:	81 bb       	out	0x11, r24	; 17
+
+            MDIO_PORTD |= au8_pin; /*Set the specified pins to 1 in PORT*/
+ 3ee:	82 b3       	in	r24, 0x12	; 18
+ 3f0:	68 2b       	or	r22, r24
+ 3f2:	62 bb       	out	0x12, r22	; 18
+ 3f4:	08 95       	ret
+
+000003f6 <MDIO_SETPIN_VALUE>:
+        return;
+    }
+}
+void MDIO_SETPIN_VALUE(u8_t au8_port, u8_t au8_pin, u8_t au8_value)
+{
+    switch (au8_port)
+ 3f6:	81 30       	cpi	r24, 0x01	; 1
+ 3f8:	99 f0       	breq	.+38     	; 0x420 <__EEPROM_REGION_LENGTH__+0x20>
+ 3fa:	28 f0       	brcs	.+10     	; 0x406 <__EEPROM_REGION_LENGTH__+0x6>
+ 3fc:	82 30       	cpi	r24, 0x02	; 2
+ 3fe:	e9 f0       	breq	.+58     	; 0x43a <__EEPROM_REGION_LENGTH__+0x3a>
+ 400:	83 30       	cpi	r24, 0x03	; 3
+ 402:	41 f1       	breq	.+80     	; 0x454 <__EEPROM_REGION_LENGTH__+0x54>
+ 404:	08 95       	ret
+    {
+    /*incase of portA*/
+    case PORTA:
+    {
+        switch (au8_value)
+ 406:	44 23       	and	r20, r20
+ 408:	31 f0       	breq	.+12     	; 0x416 <__EEPROM_REGION_LENGTH__+0x16>
+ 40a:	41 30       	cpi	r20, 0x01	; 1
+ 40c:	79 f5       	brne	.+94     	; 0x46c <__EEPROM_REGION_LENGTH__+0x6c>
+        {
+        /*INCASE OF HIGH VALUE*/
+        case HIGH:
+            MDIO_PORTA |= au8_pin; /*SETTING THE PINS TO 1*/
+ 40e:	8b b3       	in	r24, 0x1b	; 27
+ 410:	68 2b       	or	r22, r24
+ 412:	6b bb       	out	0x1b, r22	; 27
+
+            break;
+ 414:	08 95       	ret
+
+        /*INCASE OF LOW VALUE*/
+        case LOW:
+            MDIO_PORTA &= ~au8_pin; /*SETTING THE PINS TO 0*/
+ 416:	8b b3       	in	r24, 0x1b	; 27
+ 418:	60 95       	com	r22
+ 41a:	68 23       	and	r22, r24
+ 41c:	6b bb       	out	0x1b, r22	; 27
+
+            break;
+ 41e:	08 95       	ret
+        break;
+    }
+        /*incase of portB*/
+    case PORTB:
+    {
+        switch (au8_value)
+ 420:	44 23       	and	r20, r20
+ 422:	31 f0       	breq	.+12     	; 0x430 <__EEPROM_REGION_LENGTH__+0x30>
+ 424:	41 30       	cpi	r20, 0x01	; 1
+ 426:	11 f5       	brne	.+68     	; 0x46c <__EEPROM_REGION_LENGTH__+0x6c>
+        {
+        /*INCASE OF HIGH VALUE*/
+        case HIGH:
+            MDIO_PORTB |= au8_pin; /*SETTING THE PINS TO 1*/
+ 428:	88 b3       	in	r24, 0x18	; 24
+ 42a:	68 2b       	or	r22, r24
+ 42c:	68 bb       	out	0x18, r22	; 24
+
+            break;
+ 42e:	08 95       	ret
+
+        /*INCASE OF LOW VALUE*/
+        case LOW:
+            MDIO_PORTB &= ~au8_pin; /*SETTING THE PINS TO 0*/
+ 430:	88 b3       	in	r24, 0x18	; 24
+ 432:	60 95       	com	r22
+ 434:	68 23       	and	r22, r24
+ 436:	68 bb       	out	0x18, r22	; 24
+
+            break;
+ 438:	08 95       	ret
+        break;
+    }
+        /*incase of portC*/
+    case PORTC:
+    {
+        switch (au8_value)
+ 43a:	44 23       	and	r20, r20
+ 43c:	31 f0       	breq	.+12     	; 0x44a <__EEPROM_REGION_LENGTH__+0x4a>
+ 43e:	41 30       	cpi	r20, 0x01	; 1
+ 440:	a9 f4       	brne	.+42     	; 0x46c <__EEPROM_REGION_LENGTH__+0x6c>
+        {
+        /*INCASE OF HIGH VALUE*/
+        case HIGH:
+            MDIO_PORTC |= au8_pin; /*SETTING THE PINS TO 1*/
+ 442:	85 b3       	in	r24, 0x15	; 21
+ 444:	68 2b       	or	r22, r24
+ 446:	65 bb       	out	0x15, r22	; 21
+
+            break;
+ 448:	08 95       	ret
+
+        /*INCASE OF LOW VALUE*/
+        case LOW:
+            MDIO_PORTC &= ~au8_pin; /*SETTING THE PINS TO 0*/
+ 44a:	85 b3       	in	r24, 0x15	; 21
+ 44c:	60 95       	com	r22
+ 44e:	68 23       	and	r22, r24
+ 450:	65 bb       	out	0x15, r22	; 21
+
+            break;
+ 452:	08 95       	ret
+        break;
+    }
+        /*incase of portD*/
+    case PORTD:
+    {
+        switch (au8_value)
+ 454:	44 23       	and	r20, r20
+ 456:	31 f0       	breq	.+12     	; 0x464 <__EEPROM_REGION_LENGTH__+0x64>
+ 458:	41 30       	cpi	r20, 0x01	; 1
+ 45a:	41 f4       	brne	.+16     	; 0x46c <__EEPROM_REGION_LENGTH__+0x6c>
+        {
+        /*INCASE OF HIGH VALUE*/
+        case HIGH:
+            MDIO_PORTD |= au8_pin; /*SETTING THE PINS TO 1*/
+ 45c:	82 b3       	in	r24, 0x12	; 18
+ 45e:	68 2b       	or	r22, r24
+ 460:	62 bb       	out	0x12, r22	; 18
+
+            break;
+ 462:	08 95       	ret
+
+        /*INCASE OF LOW VALUE*/
+        case LOW:
+            MDIO_PORTD &= ~au8_pin; /*SETTING THE PINS TO 0*/
+ 464:	82 b3       	in	r24, 0x12	; 18
+ 466:	60 95       	com	r22
+ 468:	68 23       	and	r22, r24
+ 46a:	62 bb       	out	0x12, r22	; 18
+ 46c:	08 95       	ret
+
+0000046e <_exit>:
+ 46e:	f8 94       	cli
+
+00000470 <__stop_program>:
+ 470:	ff cf       	rjmp	.-2      	; 0x470 <__stop_program>
